@@ -39,12 +39,36 @@ describe('backend routes', () => {
     });
   });
 
+  it('allows a logged in user to view secrets', async () => {
+    const res = await agent.get('/api/v1/secrets');
+
+    expect(res.body).toEqual(
+      expect.arrayContaining([
+        {
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          title: 'can i tell you',
+          description: 'a secret?',
+        },
+      ])
+    );
+  });
+
   it('logs a user out', async () => {
     const res = await agent.delete('/api/v1/users/sessions').send(mockUser);
 
     expect(res.body).toEqual({
       success: true,
       message: 'You are now logged out.',
+    });
+  });
+
+  it('does not allow a logged out user to view secrets', async () => {
+    const res = await agent.get('/api/v1/secrets');
+
+    expect(res.body).toEqual({
+      message: 'You must be signed in to continue',
+      status: 401,
     });
   });
 });
