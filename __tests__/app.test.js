@@ -9,8 +9,11 @@ const mockUser = {
   password: '12345',
 };
 
+// create agent for cookie persistence
+const agent = request.agent(app);
+
 describe('backend routes', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     return setup(pool);
   });
 
@@ -25,6 +28,14 @@ describe('backend routes', () => {
     expect(res.body).toEqual({
       id: expect.any(String),
       email,
+    });
+  });
+
+  it('logs a user in', async () => {
+    const res = await agent.post('/api/v1/users/sessions').send(mockUser);
+
+    expect(res.body).toEqual({
+      message: 'You are now logged in.',
     });
   });
 });
