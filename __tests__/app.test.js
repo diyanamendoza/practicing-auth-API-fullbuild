@@ -38,4 +38,13 @@ describe('backend routes', () => {
       message: 'You are now logged in.',
     });
   });
+
+  it('logs a user out', async () => {
+    const res = await agent.delete('/api/v1/users/sessions').send(mockUser);
+
+    expect(res.body).toEqual({
+      success: true,
+      message: 'You are now logged out.',
+    });
+  });
 });
