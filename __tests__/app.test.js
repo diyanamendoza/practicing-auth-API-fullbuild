@@ -54,6 +54,19 @@ describe('backend routes', () => {
     );
   });
 
+  it('allows a logged in user to post a secret', async () => {
+    const res = await agent
+      .post('/api/v1/secrets')
+      .send({ title: 'sample title', description: 'sample description' });
+
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      title: 'sample title',
+      description: 'sample description',
+    });
+  });
+
   it('logs a user out', async () => {
     const res = await agent.delete('/api/v1/users/sessions').send(mockUser);
 
@@ -65,6 +78,17 @@ describe('backend routes', () => {
 
   it('does not allow a logged out user to view secrets', async () => {
     const res = await agent.get('/api/v1/secrets');
+
+    expect(res.body).toEqual({
+      message: 'You must be signed in to continue',
+      status: 401,
+    });
+  });
+
+  it('does not allow a logged out user to post secrets', async () => {
+    const res = await agent
+      .post('/api/v1/secrets')
+      .send({ title: 'sample title', description: 'sample description' });
 
     expect(res.body).toEqual({
       message: 'You must be signed in to continue',
